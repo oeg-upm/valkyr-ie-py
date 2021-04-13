@@ -31,8 +31,8 @@ from Service import NERModel
 from flask import Flask,request
 from flask_restplus import Api,Resource,fields
 app = Flask(__name__)
-api = Api(app=app,version='1.0', title='My Blog API',
-          description='A simple demonstration of a Flask RestPlus powered API')
+api = Api(app=app,version='1.0', title='Valkyr-ie BIO',
+          description='Using transformers')
 
 
 name_space = api.namespace('bio-ner', description='BIO APIs')
@@ -41,13 +41,32 @@ name_space = api.namespace('bio-ner', description='BIO APIs')
 
     
 Texto = api.model('Texto', {
-    'text': fields.String(required=True, description='Category name'),
+    'text': fields.String(required=True, description='Text to be processed', default='Clustering of missense mutations in the ataxia-telangiectasia gene in a sporadic T-cell leukaemia'),
 })
 
 
-NerModel = NERModel('myNer','NCBI-disease/','mytest/')
+NerModelNCBI = NERModel('NCBI','models/NCBI-disease/','models/NCBI-res/')
+NerModelNCBI.initModel()
 
-NerModel.initModel()
+NerModelJNLPBA = NERModel('JNLPBA','models/JNLPBA-disease/','models/JNLPBA-res/')
+NerModelJNLPBA.initModel()
+
+NerModelBC4CHEMD = NERModel('BC4CHEMD','models/BC4CHEMD-disease/','models/BC4CHEMD-res/')
+NerModelBC4CHEMD.initModel()
+
+
+def generateBIOResponse(data,labels):
+    
+    #{'label':'O','word':'Hola'},{'label':'O','word':'Mundo'}
+    List=[]
+    
+    for d,l in zip(data,labels):
+        e ={ 'word':d,'label':l }
+        List.append(e)
+    return List
+        
+    
+    
 
 
 
@@ -55,50 +74,68 @@ NerModel.initModel()
 class JNBPA(Resource):
     
    
-   
     
     @api.expect(Texto)
     def post(self):
-        print('entro')
+        """
+        To identify protein, DNA, RNA, cell line and cell type
+        """
         data = request.json
-        print(data)
         text = data.get('text')
-        print(text)
-        """
-        Adds a new conference to the list
-        """
-        TheSentence= ('Clustering of missense mutations in the ataxia-telangiectasia gene in a sporadic T-cell leukaemia')
         
+        #TheSentence= ('Clustering of missense mutations in the ataxia-telangiectasia gene in a sporadic T-cell leukaemia')
         
+        sentence, labels= NerModelJNLPBA.predict(text)
         
-        sentence, labels= NerModel.predict(TheSentence)
-        
-        lis=[]
-        for token,label in sentence,labels:
-            w={ 'word':token, 
-                
-                }
-        
-        mys= {
-          
-            'words':[{'label':'O','word':'Hola'},{'label':'O','word':'Mundo'}]
+        response= {
+            'tokens': generateBIOResponse(sentence,labels) 
             }
         
-        return mys
+        return response
     
     
     
 @name_space.route("/NCDIST/")
 class NCIDIST(Resource):
-    def get(self):
-        """
-        returns a list of conferences
-        """
+    
+    @api.expect(Texto)
     def post(self):
         """
-        Adds a new conference to the list
+        To identify Diseases
         """
-
+        data = request.json
+        text = data.get('text')
+        
+        #TheSentence= ('Clustering of missense mutations in the ataxia-telangiectasia gene in a sporadic T-cell leukaemia')
+        
+        sentence, labels= NerModelNCBI.predict(text)
+        
+        response= {
+            'tokens': generateBIOResponse(sentence,labels) 
+            }
+        
+        return response
+        
+@name_space.route("/BC4CHEMD/")
+class BC4CHEMD(Resource):
+    
+    @api.expect(Texto)
+    def post(self):
+        """
+        To identify Chemicals and Drugs
+        """
+        data = request.json
+        text = data.get('text')
+        
+        #TheSentence= ('Clustering of missense mutations in the ataxia-telangiectasia gene in a sporadic T-cell leukaemia')
+        
+        sentence, labels= NerModelBC4CHEMD.predict(text)
+        
+        response= {
+            'tokens': generateBIOResponse(sentence,labels) 
+            }
+        
+        return response
     
 
 if __name__ == '__main__':

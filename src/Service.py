@@ -43,8 +43,8 @@ from transformers import (
     TrainingArguments,
     set_seed,
 )
-from utils_ner import NerDataset, Split, get_labels
-from utils import MyNerDataset
+#from utils_ner import NerDataset, Split, get_labels
+from utils import MyNerDataset,  Split, get_labels
 
 ##### Frases
 
@@ -122,7 +122,8 @@ class NERModel:
                     preds_list[i].append(self.label_map[preds[i][j]])
 
         return preds_list, out_label_list
-     
+    
+    '''
     def prepare(self,TheSentence):
         
         newSetence = self.TokenizadorFrases.tokenize(TheSentence)
@@ -134,7 +135,7 @@ class NERModel:
         f.close()
 
 
-        
+      '''  
         
     
     def predict(self, text):
@@ -145,7 +146,7 @@ class NERModel:
         
        
         
-        directory= 'mytest/'
+        directory= self.CorpusPath #'mytest/'
         test_dataset = MyNerDataset(
             data_dir=directory,
             tokens=newSetence,
@@ -163,19 +164,16 @@ class NERModel:
         
         preds_list, outlist = self.align_predictions(predictions, label_ids)
         
-        print('#########')
         
-        print(preds_list)
-        print(outlist)
-        return newSetence, preds_list
+        return newSetence, preds_list[0]
   
     def initModel(self):
         
-        directory= 'mytest/'
+        #directory= 'mytest/'
         labels= 'labels.txt'
         
-        modelPath= 'NCBI-disease/'
-        output_dir='mytest/res' 
+        modelPath= self.ModelPath    #  'NCBI-disease/'
+        output_dir=self.CorpusPath 
         
         
         labels = get_labels(labels)
@@ -214,7 +212,7 @@ class NERModel:
         
         
         #TrainingArguments(output_dir='mytest/res', overwrite_output_dir=False, do_train=False, do_eval=False, do_predict=True, evaluate_during_training=False, per_device_train_batch_size=8, per_device_eval_batch_size=8, per_gpu_train_batch_size=None, per_gpu_eval_batch_size=None, gradient_accumulation_steps=1, learning_rate=5e-05, weight_decay=0.0, adam_epsilon=1e-08, max_grad_norm=1.0, num_train_epochs=3.0, max_steps=-1, warmup_steps=0, logging_dir='runs/Mar29_13-47-29_1143a78f5f8c', logging_first_step=False, logging_steps=500, save_steps=500, save_total_limit=None, no_cuda=False, seed=42, fp16=False, fp16_opt_level='O1', local_rank=-1, tpu_num_cores=None, tpu_metrics_debug=False, dataloader_drop_last=False)
-        tfa = TrainingArguments( output_dir='mytest/res', overwrite_output_dir=False, do_train=False, do_eval=False, do_predict=True,evaluate_during_training=False,   per_device_train_batch_size=8, per_device_eval_batch_size=8, per_gpu_train_batch_size=None, per_gpu_eval_batch_size=None, gradient_accumulation_steps=1, learning_rate=5e-05, weight_decay=0.0, adam_epsilon=1e-08, max_grad_norm=1.0, num_train_epochs=3.0, max_steps=-1, warmup_steps=0, logging_dir='runs/Mar29_13-47-29_1143a78f5f8c', logging_first_step=False, logging_steps=500, save_steps=500, save_total_limit=None, no_cuda=False, seed=42, fp16=False, fp16_opt_level='O1', local_rank=-1, tpu_num_cores=None, tpu_metrics_debug=False, dataloader_drop_last=False)
+        tfa = TrainingArguments( output_dir=output_dir, overwrite_output_dir=False, do_train=False, do_eval=False, do_predict=True,evaluate_during_training=False,   per_device_train_batch_size=8, per_device_eval_batch_size=8, per_gpu_train_batch_size=None, per_gpu_eval_batch_size=None, gradient_accumulation_steps=1, learning_rate=5e-05, weight_decay=0.0, adam_epsilon=1e-08, max_grad_norm=1.0, num_train_epochs=3.0, max_steps=-1, warmup_steps=0, logging_dir='runs/Mar29_13-47-29_1143a78f5f8c', logging_first_step=False, logging_steps=500, save_steps=500, save_total_limit=None, no_cuda=False, seed=42, fp16=False, fp16_opt_level='O1', local_rank=-1, tpu_num_cores=None, tpu_metrics_debug=False, dataloader_drop_last=False)
         self.Trainer = Trainer(
                 model=model,
                 args=tfa,
@@ -224,18 +222,11 @@ class NERModel:
             )
         
         
-        print(self.tokenizer.tokenize('Esto es un texto en español y no lo entiendo'))
-        
-     
-        
-        
-import tensorflow as tf
-tf.__version__
 
 
 
 ##### Model
-
+'''
 
 NerModel = NERModel('myNer','NCBI-disease/','mytest/')
 
@@ -262,60 +253,3 @@ NerModel.predict(TheSentence)
 '''
 
 
-
-#TheSentence= ('Clustering of missense mutations in the ataxia-telangiectasia gene in a sporadic T-cell leukaemia.')
-
-
-'''
-
-
-
-'''
-# Save predictions
-output_test_results_file = os.path.join(tfa.output_dir, "test_results.txt")
-if trainer.is_world_master():
-    with open(output_test_results_file, "w") as writer:
-        #logger.info("***** Test results *****")
-        for key, value in metrics.items():
-            #logger.info("  %s = %s", key, value)
-            writer.write("%s = %s\n" % (key, value))
-
-
-
-output_test_predictions_file = os.path.join(tfa.output_dir, "test_predictions.txt")
-if trainer.is_world_master():
-    with open(output_test_predictions_file, "w") as writer:
-        with open(os.path.join(directory, "test.txt"), "r") as f:
-            example_id = 0
-            for line in f:
-                if line.startswith("-DOCSTART-") or line == "" or line == "\n":
-                    writer.write(line)
-                    if not preds_list[example_id]:
-                        example_id += 1
-                elif preds_list[example_id]:
-                    entity_label = preds_list[example_id].pop(0)
-                    if entity_label == 'O':
-                        output_line = line.split()[0] + " " + entity_label + "\n"
-                    else:
-                        output_line = line.split()[0] + " " + entity_label[0] + "\n"
-                    # output_line = line.split()[0] + " " + preds_list[example_id].pop(0) + "\n"
-                    writer.write(output_line)
-                else:
-                    logger.warning(
-                        "Maximum sequence length exceeded: No prediction for '%s'.", line.split()[0]
-                    )
-
-
-
-
-
-
-newSetence = tokenizer2.tokenize(TheSentence)
-
-f = open("mytest/test.txt", "w")
-for s in newSetence:
-    f.write(s+' O\n')
-    
-    
-f.close()
-'''
