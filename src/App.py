@@ -26,6 +26,9 @@ Created on Wed Mar 31 10:23:50 2021
 
 '''
 
+import flask_restplus
+flask_restplus.__version__
+
 import json
 from Service import NERModel
 from flask import Flask,request
@@ -48,12 +51,12 @@ Texto = api.model('Texto', {
 NerModelNCBI = NERModel('NCBI','models/NCBI-disease/','models/NCBI-res/')
 NerModelNCBI.initModel()
 
-NerModelJNLPBA = NERModel('JNLPBA','models/JNLPBA-disease/','models/JNLPBA-res/')
-NerModelJNLPBA.initModel()
 
-NerModelBC4CHEMD = NERModel('BC4CHEMD','models/BC4CHEMD-disease/','models/BC4CHEMD-res/')
-NerModelBC4CHEMD.initModel()
+#NerModelJNLPBA = NERModel('JNLPBA','models/JNLPBA-disease/','models/JNLPBA-res/')
+#NerModelJNLPBA.initModel()
 
+#NerModelBC4CHEMD = NERModel('BC4CHEMD','models/BC4CHEMD-disease/','models/BC4CHEMD-res/')
+#NerModelBC4CHEMD.initModel()
 
 def generateBIOResponse(data,labels):
     
@@ -85,10 +88,10 @@ class JNBPA(Resource):
         
         #TheSentence= ('Clustering of missense mutations in the ataxia-telangiectasia gene in a sporadic T-cell leukaemia')
         
-        sentence, labels= NerModelJNLPBA.predict(text)
+        #sentence, labels= NerModelJNLPBA.predict(text)
         
         response= {
-            'tokens': generateBIOResponse(sentence,labels) 
+         #   'tokens': generateBIOResponse(sentence,labels) 
             }
         
         return response
@@ -127,17 +130,17 @@ class BC4CHEMD(Resource):
         data = request.json
         text = data.get('text')
         
-        #TheSentence= ('Clustering of missense mutations in the ataxia-telangiectasia gene in a sporadic T-cell leukaemia')
         
-        sentence, labels= NerModelBC4CHEMD.predict(text)
+        
+        #sentence, labels= NerModelBC4CHEMD.predict(text)
         
         response= {
-            'tokens': generateBIOResponse(sentence,labels) 
+           # 'tokens': generateBIOResponse(sentence,labels) 
             }
         
         return response
     
 
 if __name__ == '__main__':
-    app.run(debug=True,port=8088) 
+    app.run(debug=True, host='0.0.0.0',port=8088) 
     
