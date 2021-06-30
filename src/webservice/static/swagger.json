@@ -1,0 +1,70 @@
+{
+    "swagger": "2.0",
+    "basePath": "\/",
+    "paths": {
+        "\/standard\/conll\/": {
+            "post": {
+                "responses": {
+                    "200": {
+                        "description": "Success"
+                    }
+                },
+                "summary": "To identify libraries",
+                "operationId": "post_bc4_chemd",
+                "parameters": [
+                    {
+                        "name": "payload",
+                        "required": true,
+                        "in": "body",
+                        "schema": {
+                            "$ref": "#\/definitions\/Text"
+                        }
+                    }
+                ],
+                "tags": [
+                    "standard"
+                ]
+            }
+        }
+    },
+    "info": {
+        "title": "Valkyr-IE",
+        "version": "1.0",
+        "description": "Using transformers"
+    },
+    "produces": [
+        "application\/json"
+    ],
+    "consumes": [
+        "application\/json"
+    ],
+    "tags": [
+        {
+            "name": "standard",
+            "description": "BIO APIs"
+        }
+    ],
+    "definitions": {
+        "Text": {
+            "required": [
+                "text"
+            ],
+            "properties": {
+                "text": {
+                    "type": "string",
+                    "description": "Text to be processed",
+                    "default": "Clustering of missense mutations in the ataxia-telangiectasia gene in a sporadic T-cell leukaemia"
+                }
+            },
+            "type": "object"
+        }
+    },
+    "responses": {
+        "ParseError": {
+            "description": "When a mask can't be parsed"
+        },
+        "MaskError": {
+            "description": "When any error occurs on mask"
+        }
+    }
+}

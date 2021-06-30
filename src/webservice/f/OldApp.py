@@ -33,13 +33,20 @@ import json
 from Service import NERModel
 from flask import Flask,request
 from flask_restplus import Api,Resource,fields
+
+
+import ssl 
+
+context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER) 
+
+#context.load_cert_chain('certificate.crt', 'private.key')
+
 app = Flask(__name__)
 api = Api(app=app,version='1.0', title='Valkyr-ie BIO',
           description='Using transformers')
 
 
 name_space = api.namespace('bio-ner', description='BIO APIs')
-
 
 
     
@@ -142,5 +149,6 @@ class BC4CHEMD(Resource):
     
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0',port=8088) 
+    
+    app.run(debug=True,ssl_context='adhoc', host='0.0.0.0',port=8088) 
     
