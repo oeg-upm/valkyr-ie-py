@@ -7,29 +7,32 @@
 
 import flask_restplus
 import requests
-from flask import Flask, request, current_app, abort,render_template,Blueprint
+from flask import Flask, request, current_app, abort,render_template,Blueprint, url_for
 from flask_restplus import Api, Resource, fields,Namespace
-from flask_swagger_ui import get_swaggerui_blueprint
+#from flask_swagger_ui import get_swaggerui_blueprint
 #import request
 
-
+class MyApi(Api):
+    @property
+    def specs_url(self):
+        """Monkey patch for HTTPS"""
+        scheme = 'http' if '5000' in self.base_url else 'https'
+        return url_for(self.endpoint('specs'), _external=True, _scheme=scheme)
 
 
 app = Flask(__name__)
 
+
+
 blueprint = Blueprint("Valkyr-IE", __name__, url_prefix="/swagger")
-api = Api(blueprint,version='1.0', title='Valkyr-IE', description='NLP Services')
+api = MyApi(blueprint,version='1.0', title='Valkyr-IE', description='NLP Services')
 app.register_blueprint(blueprint)
 
 
 
-#api = Api(app,doc=) #, version='1.0', title='Valkyr-IE', description='Named Entity Recognition'
-
-#name_space = api.namespace('valkyrie', description='NER APIs')
-
-
 
 '''
+
 SWAGGER_UI_BLUEPRINT = get_swaggerui_blueprint(
     '/swagger',
     '/static/swagger.json',
@@ -39,6 +42,7 @@ SWAGGER_UI_BLUEPRINT = get_swaggerui_blueprint(
 )
 app.register_blueprint(SWAGGER_UI_BLUEPRINT, url_prefix='/swagger')
 '''
+
 
 
 
@@ -62,7 +66,6 @@ def index():
 
 
 #app.register_blueprint(REQUEST_API)
-
 '''
 
 @app.route("/templates")
@@ -115,4 +118,4 @@ class Model(Resource):
 
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=8080)  # ssl_context='adhoc'
+    app.run(debug=True, host='0.0.0.0', port=8084)  # ssl_context='adhoc'
