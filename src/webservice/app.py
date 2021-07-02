@@ -9,29 +9,35 @@ import flask_restplus
 import requests
 from flask import Flask, request, current_app, abort,render_template,Blueprint, url_for
 from flask_restplus import Api, Resource, fields,Namespace
-#from flask_swagger_ui import get_swaggerui_blueprint
+from flask_swagger_ui import get_swaggerui_blueprint
 #import request
 
+'''
 class MyApi(Api):
     @property
     def specs_url(self):
         """Monkey patch for HTTPS"""
         scheme = 'http' if '5000' in self.base_url else 'https'
-        return url_for(self.endpoint('specs'), _external=True, _scheme=scheme)
+        return url_for(self.endpoint('specs'), _external=True, _scheme=scheme)'
+    '''
 
 
 app = Flask(__name__)
 
 
 
-blueprint = Blueprint("Valkyr-IE", __name__, url_prefix="/swagger")
-api = MyApi(blueprint,version='1.0', title='Valkyr-IE', description='NLP Services')
+
+
+
+
+blueprint = Blueprint("Valkyr-IE", __name__, url_prefix="/api")
+api = Api(blueprint,version='1.0', title='Valkyr-IE', description='NLP Services')
 app.register_blueprint(blueprint)
 
 
 
 
-'''
+
 
 SWAGGER_UI_BLUEPRINT = get_swaggerui_blueprint(
     '/swagger',
@@ -41,7 +47,6 @@ SWAGGER_UI_BLUEPRINT = get_swaggerui_blueprint(
     }
 )
 app.register_blueprint(SWAGGER_UI_BLUEPRINT, url_prefix='/swagger')
-'''
 
 
 
