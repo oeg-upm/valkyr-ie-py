@@ -37,7 +37,7 @@ path_to_data= '/home/s730/PROJECT/data/'
 
 # big timeout for big queries
 # Carlos full documents: https://librairy.linkeddata.es/solr/covid/
-solr = pysolr.Solr('https://librairy.linkeddata.es/solr/covid/',always_commit=True, timeout=1000)
+solr = pysolr.Solr('http://librairy.linkeddata.es/solr/cord19-paragraphs/',always_commit=True, timeout=1000)
 
 
 
