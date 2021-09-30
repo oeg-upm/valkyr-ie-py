@@ -18,10 +18,7 @@ import nltk
 #import matplotlib.pyplot as plt
 import pysolr
 
-pd.options.display.max_colwidth = 200
-# %matplotlib inline
 
-!pip install pysolr==3.9.0
 #!mkdir data
 
 """Function to retrieve all documents"""
@@ -42,11 +39,7 @@ path_to_data= '/home/s730/PROJECT/data/'
 # Carlos full documents: https://librairy.linkeddata.es/solr/covid/
 solr = pysolr.Solr('https://librairy.linkeddata.es/solr/covid/',always_commit=True, timeout=1000)
 
-"""get documents"""
 
-
-
-len(results)
 
 """### CreateCorpus
 
@@ -72,7 +65,7 @@ while len(results) == max_files:
   print('start_point:'+str(start_point))
   for result in results:
     try:            
-      field_text = result["txt_t"]
+      field_text = result["text_t"]
 
       
       
@@ -102,22 +95,3 @@ print(len(text_data))
 with open(f'{path_to_data}text_{file_count}.txt', 'w', encoding='utf-8') as fp:
   fp.write('\n'.join(text_data))
 
-from tqdm.auto import tqdm
-
-text_data = []
-file_count = 0
-
-for sample in tqdm(dataset['train']):
-    sample = sample['text'].replace('\n', '').replace('"', '')
-    text_data.append(sample)
-    if len(text_data) == 10_000:
-        # once we git the 10K mark, save to file
-        with open(f'data/text/text_{file_count}.txt', 'w', encoding='utf-8') as fp:
-            fp.write('\n'.join(text_data))
-        text_data = []
-        file_count += 1
-# after saving in 10K chunks, we will have ~2082 leftover samples, we save those now too
-with open(f'data/text/text_{file_count}.txt', 'w', encoding='utf-8') as fp:
-    fp.write('\n'.join(text_data))
-
-corpus = np.array(corpus)
