@@ -15,6 +15,11 @@ import logging
 import torch
 
 
+def readlines(file):
+  with open(file, 'r', encoding='utf-8') as fp:
+    lines = fp.read().split('\n')
+    fp.close()
+    return lines 
 
 
 model_name='d4c_lm'
@@ -38,8 +43,26 @@ print(tokens)
 
 """## Pipeline"""
 
-lines=[]
+
 logging.info('Starting to read files')
+print('Starting to read files')
+
+
+labels_arr=[]
+mask_arr=[]
+for a in range(0,max_files):
+    print(a)
+    lines= readlines(path+'text_'+str(a)+'.txt')
+    batch = tokenizer(text=lines, max_length=512, padding='max_length', truncation=True)
+    labels_arr.extend(batch['input_ids'])
+    mask_arr.extend(batch['attention_mask'])
+
+
+print('Finished reading')
+labels = torch.tensor(labels_arr)
+mask = torch.tensor(mask_arr)
+
+'''
 for i in range(0,max_files):
     logging.info('Iteration: '+str(i))
     with open(path+'text_'+i+'.txt', 'r', encoding='utf-8') as fp:
@@ -58,6 +81,11 @@ logging.info('Preparing')
 
 labels = torch.tensor(batch['input_ids'])
 mask = torch.tensor(batch['attention_mask'])
+
+'''
+
+
+
 
 #labels = torch.tensor([x.input_ids for x in batch])
 #mask = torch.tensor([x.attention_mask for x in batch])
@@ -84,6 +112,8 @@ encodings = {'input_ids': input_ids, 'attention_mask': mask, 'labels': labels}
 
 
 logging.info('Creating dataset')
+print('Creating dataset')
+
 class Dataset(torch.utils.data.Dataset):
     def __init__(self, encodings):
         # store encodings internally
@@ -105,6 +135,7 @@ loader = torch.utils.data.DataLoader(dataset, batch_size=16, shuffle=True)
 
 """## Training"""
 logging.info('Model creation')
+print('Model creation')
 from transformers import RobertaConfig
 
 config = RobertaConfig(
@@ -123,6 +154,7 @@ model = RobertaForMaskedLM(config)
 #torch.cuda.is_available()
 
 logging.info('GPU: '+str(torch.cuda.is_available()))
+print('GPU: '+str(torch.cuda.is_available()))
 device = torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu')
 # and move our model over to the selected device
 model.to(device)
@@ -138,10 +170,12 @@ epochs = 10
 
 
 logging.info('TRAINING')
+print('TRAINING')
 
 for epoch in range(epochs):
     # setup loop with TQDM and dataloader
     logging.info(epoch)
+    print(epoch)
     loop = tqdm(loader, leave=True)
     for batch in loop:
         # initialize calculated gradients (from prev step)
