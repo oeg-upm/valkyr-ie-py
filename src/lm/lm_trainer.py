@@ -23,9 +23,10 @@ def readlines(file):
 
 
 model_name='d4c_lm'
-max_files=625
-path='/home/s730/PROJECTS/data/'
+max_files=300
+path='/home/s730/PROJECT/data/'
 
+logging.basicConfig(filename='lm_trainer.log', level=logging.INFO)
 
 # initialize the tokenizer using the tokenizer we initialized and saved to file
 tokenizer = RobertaTokenizer.from_pretrained(model_name, max_len=512)
@@ -52,12 +53,13 @@ labels_arr=[]
 mask_arr=[]
 for a in range(0,max_files):
     print(a)
+    logging.info(a)
     lines= readlines(path+'text_'+str(a)+'.txt')
     batch = tokenizer(text=lines, max_length=512, padding='max_length', truncation=True)
     labels_arr.extend(batch['input_ids'])
     mask_arr.extend(batch['attention_mask'])
 
-
+logging.info('Finish')
 print('Finished reading')
 labels = torch.tensor(labels_arr)
 mask = torch.tensor(mask_arr)
@@ -129,7 +131,7 @@ class Dataset(torch.utils.data.Dataset):
 
 dataset = Dataset(encodings)
 
-loader = torch.utils.data.DataLoader(dataset, batch_size=16, shuffle=True)
+loader = torch.utils.data.DataLoader(dataset, batch_size=32, shuffle=True)
 
 
 
@@ -166,7 +168,7 @@ model.train()
 # initialize optimizer
 optim = AdamW(model.parameters(), lr=1e-4)
 
-epochs = 10
+epochs = 5
 
 
 logging.info('TRAINING')

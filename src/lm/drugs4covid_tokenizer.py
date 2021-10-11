@@ -30,7 +30,7 @@ model_name='d4c_lm'
 """## Tokenizer"""
 
 from pathlib import Path
-paths = [str(x) for x in Path('/home/s730/PROJECTS/data/').glob('**/*.txt')]
+paths = [str(x) for x in Path('/home/s730/PROJECT/data/').glob('*.txt')]
 
 from tokenizers import ByteLevelBPETokenizer
 
