@@ -244,7 +244,7 @@ def read_examples_from_file(data_dir, mode: Union[Split, str]) -> List[InputExam
                     if splits_replace == 'O':
                         labels.append(splits_replace)
                     else:
-                        labels.append(splits_replace + "-bio")
+                        labels.append(splits_replace )
                 else:
                     # Examples could have no label for mode = "test"
                     labels.append("O")
