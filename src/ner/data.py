@@ -456,10 +456,10 @@ def preprocess_function(dataset,model_name_or_path, max_len,output_file):
 
 
 def preprocess_dataset(path, train_file, test_file,train_dev,dev_file, model_token='bert-base-cased', max_len=128):
-    labels =preprocess_function(path+'/'+test_file,model_token,max_len,path+'/pre/test.txt')
-    preprocess_function(path+'/'+train_file,model_token,max_len,path+'/pre/train.txt')
-    preprocess_function(path+'/'+train_dev,model_token,max_len,path+'/pre/train_dev.txt')
-    preprocess_function(path+'/'+dev_file,model_token,max_len,path+'/pre/devel.txt')
+    labels =preprocess_function(path+'/'+test_file,model_token,max_len,path+'/test.txt')
+    preprocess_function(path+'/'+train_file,model_token,max_len,path+'/train.txt')
+    preprocess_function(path+'/'+train_dev,model_token,max_len,path+'/train_dev.txt')
+    preprocess_function(path+'/'+dev_file,model_token,max_len,path+'/devel.txt')
     
    
     with open(path+'/pre/labels.txt', "w",encoding='utf-8') as f_w:

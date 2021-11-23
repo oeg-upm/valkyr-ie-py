@@ -249,15 +249,34 @@ def _mp_fn(index):
     # For xla_spawn (TPUs)
     main()
     
+    
+
+
+import argparse
+
+
+    
 if __name__ == "__main__":
   
+  
+    parser = argparse.ArgumentParser(description='Valkyr-ie ner model trainer')
+    parser.add_argument('-model', '--model_base', type=str, help='Model base')
+    parser.add_argument('-data', '--data_dir', type=str, help='Data directory')
+    parser.add_argument('-out', '--outuput_dir', type=str, help='Output directory name')
+    parser.add_argument('-epochs', '--epochs', type=int, help='Epochs')
+    parser.add_argument('-batch', '--batch', type=int, help='Batch')
 
-    marg = ModelArguments(model_name_or_path='dmis-lab/biobert-base-cased-v1.1')
-
-    darg = DataTrainingArguments(data_dir='JNLPBA',labels='JNLPBA/labels.txt',max_seq_length=128)
+    
+    args = parser.parse_args()
     
     
-    targ = TrainingArguments(output_dir='out',overwrite_output_dir=True,do_eval=True,do_train=True,seed=1,save_steps=1000,num_train_epochs=3,per_device_train_batch_size=32)
+
+    marg = ModelArguments(model_name_or_path=args.model_base)
+
+    darg = DataTrainingArguments(data_dir=args.data_dir,labels=args.data_dir+'/labels.txt',max_seq_length=128)
+    
+    
+    targ = TrainingArguments(output_dir=args.output_dir,overwrite_output_dir=True,do_eval=True,do_train=True,seed=1,save_steps=1000,num_train_epochs=args.epochs,per_device_train_batch_size=args.batch)
 
 
 
