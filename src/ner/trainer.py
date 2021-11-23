@@ -262,7 +262,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Valkyr-ie ner model trainer')
     parser.add_argument('-model', '--model_base', type=str, help='Model base')
     parser.add_argument('-data', '--data_dir', type=str, help='Data directory')
-    parser.add_argument('-out', '--outuput_dir', type=str, help='Output directory name')
+    parser.add_argument('-out', '--output_dir', type=str, help='Output directory name')
     parser.add_argument('-epochs', '--epochs', type=int, help='Epochs')
     parser.add_argument('-batch', '--batch', type=int, help='Batch')
 
